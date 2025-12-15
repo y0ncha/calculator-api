@@ -6,7 +6,7 @@
 
 /****** IMPORTS ******/
 const express = require('express');
-const logReq = require('./src/middleware/requests'); // Middleware to log requests
+const logReq = require('./src/middlewares/requests'); // Middleware to log requests
 
 
 /****** CONFIG ******/
