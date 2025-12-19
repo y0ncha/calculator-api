@@ -20,7 +20,7 @@ exports.independentCalculate = async (req, res) => {
     try {
         const args = req.body.arguments;
         const op = req.body.operation;
-        const opKey = op?.trim().toLowerCase(); // normalize the operation key
+        const opKey = op?.toLowerCase(); // normalize the operation key
         const opEntry = operations.map[opKey];
 
         if (!opEntry) { // check if operation exists
@@ -54,9 +54,8 @@ exports.independentCalculate = async (req, res) => {
         });
 
         logger.info(`Performing operation ${op}. Result is ${result}`);
-        res.status(200).json({ result });
-
         logger.debug(`Performing operation: ${op}(${args.join(',')}) = ${result}`);
+        res.status(200).json({ result });
     }
     catch (error) {
         logger.error(`Server encountered an error ! message: ${error}`);

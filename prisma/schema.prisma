@@ -7,11 +7,11 @@ datasource db {
 }
 
 model Operation {
-  rawid     Int     @id @map("rawid")
-  flavor    String? @map("flavor") @db.VarChar(255)
-  operation String? @map("operation") @db.VarChar(255)
-  arguments String? @map("arguments") @db.VarChar(255)
-  result    Int?    @map("result")
+  rawid     Int    @id @map("rawid")
+  flavor    String @map("flavor") @db.VarChar(255)
+  operation String @map("operation") @db.VarChar(255)
+  arguments String @map("arguments") @db.VarChar(255)
+  result    Int    @map("result")
 
   @@map("operations")
 }

@@ -1,11 +1,12 @@
 {
   "name": "asgmt_03",
   "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
   "main": "src/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/server.js"
   },
-  "private": true,
   "dependencies": {
     "@prisma/adapter-pg": "^7.1.0",
     "@prisma/client": "^7.2.0",
@@ -15,11 +16,8 @@
     "mongodb": "^7.0.0",
     "pg": "^8.16.3"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "directories": {
-    "doc": "docs"
+  "devDependencies": {
+    "prisma": "^7.2.0"
   },
   "repository": {
     "type": "git",
@@ -29,8 +27,5 @@
     "url": "https://github.com/y0ncha/calculator-api/issues"
   },
   "homepage": "https://github.com/y0ncha/calculator-api#readme",
-  "description": "",
-  "devDependencies": {
-    "prisma": "^7.2.0"
-  }
+  "description": ""
 }

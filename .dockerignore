@@ -10,7 +10,7 @@ run.bat
 # Git and IDE files
 .git
 .gitignore
-.idea
+.idea/
 
 # Docker-specific
 Dockerfile
