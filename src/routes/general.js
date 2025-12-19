@@ -43,4 +43,10 @@ router.get('/logs/level', controller.getLogLevel);
  */
 router.put('/logs/level', controller.setLogLevel);
 
+
+/**
+ *
+ */
+router.delete('/calculator/database', controller.clearDB)
+
 module.exports = router;

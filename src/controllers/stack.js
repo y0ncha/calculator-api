@@ -11,6 +11,7 @@ const stack = require('../utils/stack');
 const operations = require('../utils/operations');
 const { stackHistory: history} = require('../utils/history');
 const { stackLogger: logger } = require('../loggers');
+const {insertOperation} = require("../db/repositories/postgres");
 
 /**
  * @function getStackSize
@@ -51,7 +52,7 @@ exports.pushArgs = (req, res) => {
  * @function stackCalculate
  * @description Performs operation using numbers from stack
  */
-exports.stackCalculate = (req, res) => {
+exports.stackCalculate = async (req, res) => {
     const op = req.query.operation;
     const opKey = op?.toLowerCase();
     const opEntry = operations.map[opKey];
@@ -59,12 +60,12 @@ exports.stackCalculate = (req, res) => {
     if (!opEntry) {
         const error = `Error: unknown operation: ${op}`;
         logger.error(`Server encountered an error ! message: ${error}`);
-        return res.status(409).json({ errorMessage: error });
+        return res.status(409).json({errorMessage: error});
     }
     if (opEntry.arity > stack.size()) {
         const error = `Error: cannot implement operation ${op}. It requires ${opEntry.arity} arguments and the stack has only ${stack.size()} arguments`;
         logger.error(`Server encountered an error ! message: ${error}`);
-        return res.status(409).json({ errorMessage: error });
+        return res.status(409).json({errorMessage: error});
     }
 
     try {
@@ -74,12 +75,19 @@ exports.stackCalculate = (req, res) => {
         logger.info(`Performing operation ${op}. Result is ${result} | stack size: ${stack.size()}`)
         history.addAction(op, args, result);
 
-        res.status(200).json({ result });
+        // Insert the operation into the database
+        await insertOperation({
+            flavor: "STACK",
+            operation: opKey,
+            result,
+            arguments: JSON.stringify(args),
+        });
+
+        res.status(200).json({result});
         logger.debug(`Performing operation: ${op}(${args.join(',')}) = ${result}`)
-    }
-    catch (error) {
+    } catch (error) {
         logger.error(`Server encountered an error ! message: ${error}`);
-        res.status(409).json({ errorMessage: error });
+        res.status(409).json({errorMessage: error});
     }
 };
 

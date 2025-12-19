@@ -7,6 +7,7 @@
 
 const {stackHistory, independentHistory} = require('../utils/history');
 const { stackLogger, independentLogger, requestLogger } = require('../loggers');
+const {clearDatabase} = require("../db/repositories/postgres")
 
 /**
  * @function health
@@ -115,4 +116,13 @@ exports.setLogLevel = (req, res) => {
         return res.status(409).json({ errorMessage: `Logger '${name}' not found` });
     }
     res.status(200).json({ result: level });
+};
+
+exports.clearDB = async (req, res) => {
+    try {
+        const result = await clearDatabase();
+        res.status(200).json({result});
+    } catch (error) {
+        res.status(409).json({errorMessage: error && error.message ? error.message : String(error)});
+    }
 };

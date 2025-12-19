@@ -9,7 +9,7 @@
 const operations = require('../utils/operations');
 const {independentHistory: history} = require('../utils/history');
 const { independentLogger: logger } = require('../loggers');
-const { insertOperation } = require("../repositories/operationsRepo");
+const {insertOperation} = require("../db/repositories/postgres");
 
 /**
  * @function independentCalculate

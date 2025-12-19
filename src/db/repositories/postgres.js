@@ -1,13 +1,12 @@
-const { prisma } = require("../db/prismaClient");
+const {prisma} = require("../clients/prisma");
 
 async function insertOperation({ flavor, operation, result, arguments: args }) {
     return prisma.$transaction(async (tx) => {
         // 1. Get last rawid
         const last = await getLast(tx, "rawid");
-        const lastId = last ? last : 0;
 
         // 2. Compute next rawid
-        const nextId = lastId + 1;
+        const nextId = last ? last + 1 : 1;
 
         // 3. Insert with explicit rawid
         const record = await tx.operation.create({
@@ -19,7 +18,6 @@ async function insertOperation({ flavor, operation, result, arguments: args }) {
                 arguments: args,
             },
         });
-
         return record.rawid;
     });
 }
@@ -38,8 +36,11 @@ async function getLast(tx, field) {
         select: { [field]: true },
     });
 
-    return row[field];
+    return row ? row[field] : null;
 }
 
-module.exports = {insertOperation, listOperations};
+async function clearDatabase() {
+    await prisma.operation.deleteMany({});
+}
 
+module.exports = {insertOperation, listOperations, clearDatabase};
