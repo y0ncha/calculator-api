@@ -10,7 +10,7 @@ let reqCount = 1;
 
 /**
  * @function logReq
- * @description Express middleware that logs each request start and duration
+ * @description Express middlewares that logs each request start and duration
  */
 function logReq(req, res, next) {
     const reqId = reqCount++;

@@ -1,12 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -14,11 +7,11 @@ datasource db {
 }
 
 model Operation {
-  rawid     Int    @id @default(autoincrement())
-  flavor    String
-  operation String
-  result    Int
-  arguments String
+  rawid     Int     @id @map("rawid")
+  flavor    String? @map("flavor") @db.VarChar(255)
+  operation String? @map("operation") @db.VarChar(255)
+  arguments String? @map("arguments") @db.VarChar(255)
+  result    Int?    @map("result")
 
   @@map("operations")
 }

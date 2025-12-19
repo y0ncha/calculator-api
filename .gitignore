@@ -1,3 +1,5 @@
+# Gitignore file
+
 # Node.js dependencies
 /node_modules/
 
@@ -39,8 +41,12 @@ Thumbs.db
 
 # Temporary files
 *.tmp
+tests/
 
 # Miscellaneous
 *.bak
 *.orig
 calc-api.JSON
+
+# Generated Prisma client
+/src/generated/prisma

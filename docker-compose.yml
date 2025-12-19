@@ -1,0 +1,22 @@
+version: "3"
+services:
+  postgres:
+    platform: linux/amd64
+    image: theshultz/kaplat-calculator-postgres-instance:latest
+#to expose postgres container externally
+    ports:
+      - "5432:5432"
+  mongo:
+    platform: linux/amd64
+    image: theshultz/kaplat-calculator-mongo-instance:latest
+#to expose mongo container externally
+    ports:
+      - "27017:27017"
+#  app:
+#    image: <put your image name here. no (") are needed. example: shul/serv-ex:3.0>
+#    restart: on-failure:10
+#    ports:
+#      - "4785:8496"
+#    depends_on:
+#      - postgres
+#      - mongo

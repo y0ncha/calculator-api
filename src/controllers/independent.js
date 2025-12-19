@@ -9,16 +9,18 @@
 const operations = require('../utils/operations');
 const {independentHistory: history} = require('../utils/history');
 const { independentLogger: logger } = require('../loggers');
+const { insertOperation } = require("../repositories/operationsRepo");
 
 /**
  * @function independentCalculate
  * @description Performs calculation with provided arguments
  */
-exports.independentCalculate = (req, res) => {
+exports.independentCalculate = async (req, res) => {
+
     try {
         const args = req.body.arguments;
         const op = req.body.operation;
-        const opKey = op?.toLowerCase();
+        const opKey = op?.trim().toLowerCase(); // normalize the operation key
         const opEntry = operations.map[opKey];
 
         if (!opEntry) { // check if operation exists
@@ -37,14 +39,24 @@ exports.independentCalculate = (req, res) => {
             return res.status(409).json({ errorMessage: error });
         }
 
+        // Perform the operation
         const result = operations.perform(opKey, args);
+
+        // Log the operation to history
         history.addAction(op, args, result);
+
+        // Insert the operation into the database
+        await insertOperation({
+            flavor: "INDEPENDENT",
+            operation: opKey,
+            result,
+            arguments: JSON.stringify(args),
+        });
 
         logger.info(`Performing operation ${op}. Result is ${result}`);
         res.status(200).json({ result });
 
         logger.debug(`Performing operation: ${op}(${args.join(',')}) = ${result}`);
-
     }
     catch (error) {
         logger.error(`Server encountered an error ! message: ${error}`);
