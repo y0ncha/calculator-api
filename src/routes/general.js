@@ -1,6 +1,6 @@
 /**
  * @module routes/general
- * @description Express router configuration for general calculator endpoints (health, history, logger level)
+ * @description General endpoint definitions (health, history, database, log level)
  * @requires express
  * @requires ../controllers/general
  */
@@ -45,7 +45,8 @@ router.put('/logs/level', controller.setLogLevel);
 
 
 /**
- *
+ * @route DELETE /calculator/database
+ * @description Clear all operations from database
  */
 router.delete('/calculator/database', controller.clearDB)
 

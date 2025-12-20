@@ -1,15 +1,14 @@
 /**
- * @class Stack
- * @description A stack data structure implementation for integer operations
- * @example
- * const stack = new Stack();
- * stack.push([1, 2, 3]); // Adds numbers to stack
- * stack.pop(2); // Returns [3, 2]
+ * @module utils/stack
+ * @description Stack data structure for integer operations
  */
 
+/**
+ * @class Stack
+ * @description Stack implementation for calculator operations
+ */
 class Stack {
     /**
-     * Creates a new Stack instance
      * @constructor
      */
     constructor() {
@@ -17,9 +16,8 @@ class Stack {
     }
 
     /**
-     * @description Pushes multiple integers onto the stack
-     * @param {number[]} args - Array of integers to push
-     * @throws {string} If args is not an array or contains non-integers
+     * @function push
+     * @description Pushes integers onto the stack
      */
     push(args) {
         if (!Array.isArray(args)) {
@@ -32,10 +30,8 @@ class Stack {
     }
 
     /**
-     * @description Removes and returns multiple items from the top of the stack
-     * @param {number} count - Number of items to remove
-     * @returns {number[]} Array of removed items in reverse order
-     * @throws {string} If count is invalid or larger than stack length
+     * @function pop
+     * @description Removes and returns items from top of stack in reverse order
      */
     pop(count) {
         const size = this._items.length;
@@ -46,27 +42,28 @@ class Stack {
     }
 
     /**
-     * @description Gets the current number of items in the stack
-     * @returns {number} Stack length
+     * @function size
+     * @description Returns current stack length
      */
     size() {
         return this._items.length;
     }
 
     /**
-     * @description Gets the current items in the stack as a string (first item is the top)
-     * @returns {string} Array of items in the stack
+     * @function stringify
+     * @description Returns stack contents as string (top first)
      */
     stringify() {
         return `${this._items.slice().reverse().join(', ')}`;
     }
 
     /**
-     * @description Removes all items from the stack
+     * @function clear
+     * @description Clears all items from stack
      */
     clear() {
         this._items.length = 0;
     }
 }
 
-module.exports = new Stack();  // Singleton instance
+module.exports = new Stack();
