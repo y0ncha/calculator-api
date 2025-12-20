@@ -55,7 +55,10 @@ async function list(flavor) {
   await assertLive();
 
   const filter = flavor ? { flavor } : {};
-  return Operation.find(filter).sort({ rawid: 1 }).lean();
+  return Operation.find(filter)
+    .sort({ rawid: 1 })
+    .select("-_id")
+    .lean();
 }
 
 /**
