@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 8496
 
 # Define the command to start the app
-CMD ["node", "server.js"]
+CMD ["node", "src/server.js"]

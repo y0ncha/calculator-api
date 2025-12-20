@@ -54,5 +54,4 @@ You can run the API directly using the pre-built image on Docker Hub.
 Environment settings live in `.env` at the project root. Prisma does not auto-load this file, so ensure `prisma.config.ts` imports `dotenv/config` (already noted in `.env`) or load the variables before running Prisma CLI commands.
 
 - `POSTGRES_URI`: PostgreSQL connection string used by Prisma and the API. The default (`postgresql://postgres:docker@localhost:5432/operations`) matches the Postgres service in `docker-compose.yml`; update the credentials/host when pointing to a different database.
-- `MONGO_URI`: Optional MongoDB connection string. Replace `mongodb://localhost:27017/your_db_name` with the Mongo server you intend to use if Mongo mode is enabled.
-- `MONGO_MODE`: Feature toggle for Mongo-specific flows. Set to `on` to allow the app to use the configured `MONGO_URI`; keep it `off` to skip Mongo entirely during local development (useful on Apple Silicon where the provided Mongo container cannot start).
+- `MONGO_URI`: Optional MongoDB connection string. Defaults to `mongodb://mongo:27017/<db>` when running under Docker; override only if you need a different host/database.

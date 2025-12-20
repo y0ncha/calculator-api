@@ -8,8 +8,10 @@
  * @requires ./routes/general
  */
 
-const express = require('express');
-const logReq = require('./middlewares/requests');
+const express = require("express");
+const { URL } = require("url");
+const logReq = require("./middlewares/requests");
+const { config } = require("./config");
 
 const PORT = 8496;
 const app = express();
@@ -19,16 +21,28 @@ app.use(express.json());
 app.use(logReq);
 
 // Route registration
-const stackRoutes = require('./routes/stack');
-app.use('/calculator', stackRoutes);
+const stackRoutes = require("./routes/stack");
+app.use("/calculator", stackRoutes);
 
-const independentRoutes = require('./routes/independent');
-app.use('/calculator', independentRoutes);
+const independentRoutes = require("./routes/independent");
+app.use("/calculator", independentRoutes);
 
-const generalRoutes = require('./routes/general');
+const generalRoutes = require("./routes/general");
 app.use(generalRoutes);
 
+const maskConnectionString = (uri) => {
+  if (!uri) return "";
+  try {
+    const parsed = new URL(uri);
+    if (parsed.password) {
+      parsed.password = "***";
+    }
+    return parsed.toString();
+  } catch (error) {
+    return uri.replace(/(\/\/[^:]+):[^@]+@/, "$1:***@");
+  }
+};
 
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`[startup] Server running on http://localhost:${PORT}`);
 });

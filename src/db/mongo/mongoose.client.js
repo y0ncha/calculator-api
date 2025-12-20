@@ -1,25 +1,38 @@
 const mongoose = require("mongoose");
+const { URL } = require("url");
+const { config } = require("../../config");
 
 mongoose.set("strictQuery", true);
 
 let connected = false;
 
+const maskConnectionString = (uri) => {
+  if (!uri) return "";
+  try {
+    const parsed = new URL(uri);
+    if (parsed.password) {
+      parsed.password = "***";
+    }
+    return parsed.toString();
+  } catch (error) {
+    return uri.replace(/(\/\/[^:]+):[^@]+@/, "$1:***@");
+  }
+};
+
 /**
  * Connects to MongoDB using Mongoose.
- * No-op if already connected or if MONGO_MODE !== "on".
+ * No-op if already connected or if Mongo mode is disabled.
  */
 async function connect() {
   if (connected) return;
 
-  const mode = (process.env.MONGO_MODE || "off").toLowerCase();
-  if (mode !== "on") return;
+  console.log(
+    `[startup] Connecting to Mongo at ${maskConnectionString(
+      config.mongo.uri,
+    )}`,
+  );
 
-  const uri = process.env.MONGO_URI;
-  if (!uri) {
-    throw new Error("Missing MONGO_URI env var");
-  }
-
-  await mongoose.connect(uri, {
+  await mongoose.connect(config.mongo.uri, {
     serverSelectionTimeoutMS: 1500,
   });
 
