@@ -1,10 +1,11 @@
 /**
  * @module controllers/stack
- * @description Stack-based calculator logic
+ * @description Stack-based calculator request handling and orchestration
  * @requires ../utils/stack
  * @requires ../utils/operations
  * @requires ../utils/history
  * @requires ../loggers
+ * @requires ../db/repositories/postgres
  */
 
 const stack = require('../utils/stack');
@@ -28,7 +29,7 @@ exports.getStackSize = (req, res) => {
 
 /**
  * @function pushArgs
- * @description Pushes numbers onto the stack
+ * @description Pushes integers onto stack, returns new size
  */
 exports.pushArgs = (req, res) => {
     try {
@@ -50,7 +51,7 @@ exports.pushArgs = (req, res) => {
 
 /**
  * @function stackCalculate
- * @description Performs operation using numbers from stack
+ * @description Performs operation using stack arguments, persists to database
  */
 exports.stackCalculate = async (req, res) => {
     const op = req.query.operation;
@@ -75,7 +76,7 @@ exports.stackCalculate = async (req, res) => {
         logger.info(`Performing operation ${op}. Result is ${result} | stack size: ${stack.size()}`)
         history.addAction(op, args, result);
 
-        // Insert the operation into the database
+        // Persist to database with flavor STACK
         await insertOperation({
             flavor: "STACK",
             operation: opKey,
@@ -93,7 +94,7 @@ exports.stackCalculate = async (req, res) => {
 
 /**
  * @function popArgs
- * @description Removes numbers from the stack
+ * @description Removes integers from stack, returns new size
  */
 exports.popArgs = (req, res) => {
     try {

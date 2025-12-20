@@ -1,6 +1,6 @@
 /**
  * @module routes/independent
- * @description Express router configuration for independent.log calculator endpoints
+ * @description Independent calculator endpoint definitions
  * @requires express
  * @requires ../controllers/independent
  */
@@ -10,11 +10,8 @@ const router = express.Router();
 const controller = require('../controllers/independent');
 
 /**
- * @route POST /calculator/independent.log/calculate
- * @description Perform independent.log calculation
- * @body {Object} request
- * @body {string} request.operation - Operation to perform
- * @body {number[]} request.arguments - Arguments to use in the calculation
+ * @route POST /calculator/independent/calculate
+ * @description Perform calculation with provided arguments
  */
 router.post('/independent/calculate', controller.independentCalculate);
 

@@ -1,8 +1,9 @@
 /**
  * @module controllers/general
- * @description General calculator-related operations (health, history)
+ * @description General endpoint handlers (health, history, database, log level)
  * @requires ../utils/history
  * @requires ../loggers
+ * @requires ../db/repositories/postgres
  */
 
 const {stackHistory, independentHistory} = require('../utils/history');
@@ -19,7 +20,7 @@ exports.health = (req, res) => {
 
 /**
  * @function fetchHistory
- * @description Retrieves calculation history based on flavor
+ * @description Retrieves in-memory history filtered by flavor (STACK, INDEPENDENT, or both)
  */
 exports.fetchHistory = (req, res) => {
     const flavor = req.query.flavor;
@@ -52,7 +53,7 @@ exports.fetchHistory = (req, res) => {
 
 /**
  * @function clearHistory
- * @description Clears all history entries
+ * @description Clears in-memory history for both flavors
  */
 exports.clearHistory = (req, res) => {
     stackHistory.clear();
@@ -62,8 +63,7 @@ exports.clearHistory = (req, res) => {
 
 /**
  * @function getLogLevel
- * @description Gets the current log level of a logger by name
- * @query {string} logger-name - The logger name ('stack' or 'independent')
+ * @description Returns current log level of specified logger
  */
 exports.getLogLevel = (req, res) => {
     const name = req.query['logger-name'];
@@ -84,20 +84,17 @@ exports.getLogLevel = (req, res) => {
 
 /**
  * @function setLogLevel
- * @description Sets the log level of a logger by name
- * @query {string} logger-name - The logger name ('stack' or 'independent')
- * @body {string} level - The new log level (e.g. 'INFO', 'DEBUG')
+ * @description Updates log level of specified logger
  */
 exports.setLogLevel = (req, res) => {
     const name = req.query['logger-name'];
     let level = req.query['logger-level'];
 
-    // Validate the level input
+    // Validate log level
     if (!['DEBUG', 'INFO', 'ERROR'].includes(level)) {
         return res.status(409).json({ errorMessage: `Invalid log level: ${level}` });
     }
 
-    // Normalize the level to lowercase for consistency
     level = level.toLowerCase();
 
     if (name === 'stack-logger') {
@@ -112,12 +109,16 @@ exports.setLogLevel = (req, res) => {
         requestLogger.level = level;
         level = requestLogger.level.levelStr;
     }
-    else { // If the logger name is not recognized, return an error
+    else {
         return res.status(409).json({ errorMessage: `Logger '${name}' not found` });
     }
     res.status(200).json({ result: level });
 };
 
+/**
+ * @function clearDB
+ * @description Clears all operations from Postgres database
+ */
 exports.clearDB = async (req, res) => {
     try {
         const result = await clearDatabase();

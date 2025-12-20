@@ -1,6 +1,6 @@
 /**
  * @module loggers
- * @description Initializes and exports all loggers using log4js
+ * @description Log4js logger configuration and exports
  * @requires log4js
  * @requires fs
  * @requires path
@@ -10,20 +10,19 @@ const loggers = require('log4js');
 const fs = require('fs');
 const path = require('path');
 
-
-// Create logs/ in the working directory (process.cwd())
+// Create logs directory if needed
 const logsDir = path.join(process.cwd(), 'logs');
 if (!fs.existsSync(logsDir)) {
     fs.mkdirSync(logsDir, { recursive: true });
 }
 
-// Define a common log layout for all loggers
+// Common log layout pattern
 const logLayout = {
     type: 'pattern',
     pattern: '%d{dd-MM-yyyy hh:mm:ss.SSS} %p: %m | request #%X{requestId} '
 };
 
-// Configure log4js with multiple appenders and logger categories
+// Configure log4js
 loggers.configure({
     appenders: {
         request: {
@@ -50,22 +49,18 @@ loggers.configure({
         }
     },
     categories: {
-        // Default logger configuration
         default: {
             appenders: ['console'],
             level: 'info'
         },
-        // In charge of logging each incoming request of any type to the server
         'request-logger': {
             appenders: ['request', 'console'],
             level: 'info'
         },
-        // In charge of logging information on all the stack behavior
         'stack-logger': {
             appenders: ['stack'],
             level: 'info'
         },
-        // In charge of logging information on all the independent behavior
         'independent-logger': {
             appenders: ['independent'],
             level: 'debug'
@@ -75,24 +70,24 @@ loggers.configure({
 
 /**
  * @constant {Logger} requestLogger
- * @description In charge of logging each incoming request of any type to the server
+ * @description Logs all incoming requests
  */
 const requestLogger = loggers.getLogger('request-logger');
 
 /**
  * @constant {Logger} stackLogger
- * @description In charge of logging information on all the stack behavior
+ * @description Logs stack-based operations
  */
 const stackLogger = loggers.getLogger('stack-logger');
 
 /**
  * @constant {Logger} independentLogger
- * @description In charge of logging information on all the independent behavior
+ * @description Logs independent operations
  */
 const independentLogger = loggers.getLogger('independent-logger');
 
 module.exports = {
     requestLogger,
-    stackLogger: stackLogger,
+    stackLogger,
     independentLogger,
 }

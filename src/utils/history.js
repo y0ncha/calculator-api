@@ -1,41 +1,44 @@
 /**
- * @module history
- * @description Module for tracking calculator operations history by flavor
+ * @module utils/history
+ * @description In-memory history tracking for calculator operations
  */
 
 /**
  * @typedef {Object} HistoryEntry
- * @property {string} operation - Name of the operation
- * @property {number[]} arguments - Arguments used in the operation
- * @property {number} result - Result of the operation
+ * @property {string} flavor - Operation flavor (STACK or INDEPENDENT)
+ * @property {string} operation - Operation name
+ * @property {number[]} arguments - Operation arguments
+ * @property {number} result - Operation result
  */
 
+/**
+ * @class History
+ * @description In-memory history tracker for operations
+ */
 class History {
     constructor(flavor) {
-        /** @type {HistoryEntry[]} */
         this.entries = [];
         this.flavor = flavor;
     }
 
     /**
-     * @description Logs an operation
-     * @param {string} op - Operation name
-     * @param {number[]} args - Arguments used
-     * @param {number} res - Operation result
+     * @function addAction
+     * @description Adds operation to history
      */
     addAction(op, args, res) {
         this.entries.push({ flavor: this.flavor, operation: op, arguments: args, result: res });
     }
 
     /**
-     * @description Retrieves the history
-     * @returns {HistoryEntry[]}
+     * @function fetch
+     * @description Returns copy of history entries
      */
     fetch() {
         return [...this.entries];
     }
 
     /**
+     * @function clear
      * @description Clears all history entries
      */
     clear() {
@@ -43,15 +46,14 @@ class History {
     }
 
     /**
-     * @description Returns the length of the history
-     * @returns {number}
+     * @function length
+     * @description Returns history length
      */
     length() {
         return this.entries.length;
     }
 }
 
-// Export two separate history instances
 const stackHistory = new History('STACK');
 const independentHistory = new History('INDEPENDENT');
 

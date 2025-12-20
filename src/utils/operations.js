@@ -1,17 +1,17 @@
 /**
- * @module operations
- * @description A calculator module that provides basic arithmetic operations
+ * @module utils/operations
+ * @description Arithmetic operations for calculator
  */
 
 /**
  * @typedef {Object} OperationEntry
- * @property {number} arity - Number of arguments the operation requires
- * @property {Function} fn - Function implementing the operation
+ * @property {number} arity - Number of required arguments
+ * @property {Function} fn - Operation implementation
  */
 
 /**
- * @type {Object.<string, OperationEntry>}
- * @description Map of supported operations and their implementations
+ * @constant {Object.<string, OperationEntry>} map
+ * @description Supported operations: plus, minus, times, divide, pow, abs, fact
  */
 const map = {
     plus: {
@@ -29,8 +29,6 @@ const map = {
     divide: {
         arity: 2,
         fn: (x, y) => {
-            // Using Math.trunc to ensure integer division
-            // This matches behavior of many programming languages
             if (y === 0) throw `Error while performing operation Divide: division by 0`;
             return Math.trunc(x / y);
         }
@@ -53,17 +51,8 @@ const map = {
 };
 
 /**
- * @description Performs the requested arithmetic operation on the given arguments
- * @param {string} op - Operation name (plus, minus, times, divide, pow, abs, fact)
- * @param {number[]} args - Array of integer arguments for the operation
- * @returns {number} Result of the operation
- * @throws {string} Error message if:
- *                  - Operation is unknown
- *                  - Division by zero is attempted
- *                  - Factorial of negative number is requested
- * @example
- * perform('plus', [1, 2]) // returns 3
- * perform('divide', [10, 2]) // returns 5
+ * @function perform
+ * @description Performs arithmetic operation on provided arguments
  */
 function perform(op, args) {
     const entry = map[op];
@@ -81,9 +70,8 @@ function perform(op, args) {
 }
 
 /**
- * @description Calculates the factorial of a non-negative integer
- * @param {number} n - Non-negative integer
- * @returns {number} Factorial of n
+ * @function factorial
+ * @description Computes factorial of non-negative integer
  * @private
  */
 function factorial(n) {

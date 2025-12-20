@@ -1,8 +1,8 @@
 /**
  * @module routes/stack
- * @description Express router configuration for stack-related calculator endpoints
+ * @description Stack-based calculator endpoint definitions
  * @requires express
- * @requires ../controllers/calculator
+ * @requires ../controllers/stack
  */
 
 const express = require('express');
