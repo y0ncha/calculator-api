@@ -5,26 +5,26 @@
  * @requires ../utils/operations
  * @requires ../utils/history
  * @requires ../loggers
- * @requires ../db/repositories/postgres
+ * @requires ../repositories/postgres
  */
 
-const stack = require('../utils/stack');
-const operations = require('../utils/operations');
-const { stackHistory: history} = require('../utils/history');
-const { stackLogger: logger } = require('../loggers');
-const {insertOperation} = require("../db/repositories/postgres");
+const stack = require("../utils/stack");
+const operations = require("../utils/operations");
+const { stackHistory: history } = require("../utils/history");
+const { stackLogger: logger } = require("../loggers");
+const postgres = require("../repositories/operation.postgres");
 
 /**
  * @function getStackSize
  * @description Returns current stack length
  */
 exports.getStackSize = (req, res) => {
-    const size = stack.size();
+  const size = stack.size();
 
-    logger.info(`Stack size is ${size}`);
+  logger.info(`Stack size is ${size}`);
 
-    res.status(200).json({ result: size });
-    logger.debug( `Stack content (first == top): [${stack.stringify()}]`)
+  res.status(200).json({ result: size });
+  logger.debug(`Stack content (first == top): [${stack.stringify()}]`);
 };
 
 /**
@@ -32,21 +32,28 @@ exports.getStackSize = (req, res) => {
  * @description Pushes integers onto stack, returns new size
  */
 exports.pushArgs = (req, res) => {
-    try {
-        const args = req.body.arguments;
-        let len = args.length;
-        let size = stack.size();
+  try {
+    const args = req.body.arguments;
+    let len = args.length;
+    let size = stack.size();
 
-        logger.info(`Adding total of ${len} argument(s) to the stack | Stack size: ${size + len}`);
-        stack.push(args);
+    logger.info(
+      `Adding total of ${len} argument(s) to the stack | Stack size: ${
+        size + len
+      }`
+    );
+    stack.push(args);
 
-        res.status(200).json({ result: stack.size() });
-        logger.debug(`Adding arguments: ${args.join(',')} | Stack size before ${size} | stack size after ${stack.size()}`);
-    }
-    catch (error) {
-        logger.error(`Server encountered an error ! message: ${error}`);
-        res.status(409).json({ errorMessage: error });
-    }
+    res.status(200).json({ result: stack.size() });
+    logger.debug(
+      `Adding arguments: ${args.join(
+        ","
+      )} | Stack size before ${size} | stack size after ${stack.size()}`
+    );
+  } catch (error) {
+    logger.error(`Server encountered an error ! message: ${error}`);
+    res.status(409).json({ errorMessage: error });
+  }
 };
 
 /**
@@ -54,42 +61,47 @@ exports.pushArgs = (req, res) => {
  * @description Performs operation using stack arguments, persists to database
  */
 exports.stackCalculate = async (req, res) => {
-    const op = req.query.operation;
-    const opKey = op?.toLowerCase();
-    const opEntry = operations.map[opKey];
+  const op = req.query.operation;
+  const opKey = op?.toLowerCase();
+  const opEntry = operations.map[opKey];
 
-    if (!opEntry) {
-        const error = `Error: unknown operation: ${op}`;
-        logger.error(`Server encountered an error ! message: ${error}`);
-        return res.status(409).json({errorMessage: error});
-    }
-    if (opEntry.arity > stack.size()) {
-        const error = `Error: cannot implement operation ${op}. It requires ${opEntry.arity} arguments and the stack has only ${stack.size()} arguments`;
-        logger.error(`Server encountered an error ! message: ${error}`);
-        return res.status(409).json({errorMessage: error});
-    }
+  if (!opEntry) {
+    const error = `Error: unknown operation: ${op}`;
+    logger.error(`Server encountered an error ! message: ${error}`);
+    return res.status(409).json({ errorMessage: error });
+  }
+  if (opEntry.arity > stack.size()) {
+    const error = `Error: cannot implement operation ${op}. It requires ${
+      opEntry.arity
+    } arguments and the stack has only ${stack.size()} arguments`;
+    logger.error(`Server encountered an error ! message: ${error}`);
+    return res.status(409).json({ errorMessage: error });
+  }
 
-    try {
-        const args = stack.pop(opEntry.arity);
-        const result = operations.perform(opKey, args);
+  try {
+    const args = stack.pop(opEntry.arity);
+    const result = operations.perform(opKey, args);
 
-        logger.info(`Performing operation ${op}. Result is ${result} | stack size: ${stack.size()}`)
-        history.addAction(op, args, result);
+    logger.info(
+      `Performing operation ${op}. Result is ${result} | stack size: ${stack.size()}`
+    );
+    history.addAction(op, args, result);
 
-        // Persist to database with flavor STACK
-        await insertOperation({
-            flavor: "STACK",
-            operation: opKey,
-            result,
-            arguments: JSON.stringify(args),
-        });
+    // Persist to database with flavor STACK
+    await postgres.insert({
+      flavor: "STACK",
+      operation: opKey,
+      result,
+      arguments: JSON.stringify(args),
+    });
 
-        res.status(200).json({result});
-        logger.debug(`Performing operation: ${op}(${args.join(',')}) = ${result}`)
-    } catch (error) {
-        logger.error(`Server encountered an error ! message: ${error}`);
-        res.status(409).json({errorMessage: error});
-    }
+    res.status(200).json({ result });
+    logger.debug(`Performing operation: ${op}(${args.join(",")}) = ${result}`);
+  } catch (error) {
+    const message = error?.message || String(error);
+    logger.error(`Server encountered an error ! message: ${message}`);
+    res.status(503).json({ errorMessage: message });
+  }
 };
 
 /**
@@ -97,14 +109,15 @@ exports.stackCalculate = async (req, res) => {
  * @description Removes integers from stack, returns new size
  */
 exports.popArgs = (req, res) => {
-    try {
-        const count = Number(req.query.count);
-        stack.pop(count);
-        logger.info(`Removing total ${count} argument(s) from the stack | Stack size: ${stack.size()}`)
-        res.status(200).json({ result: stack.size() });
-    }
-    catch (error) {
-        logger.error(`Server encountered an error ! message: ${error}`);
-        res.status(409).json({ errorMessage: error });
-    }
+  try {
+    const count = Number(req.query.count);
+    stack.pop(count);
+    logger.info(
+      `Removing total ${count} argument(s) from the stack | Stack size: ${stack.size()}`
+    );
+    res.status(200).json({ result: stack.size() });
+  } catch (error) {
+    logger.error(`Server encountered an error ! message: ${error}`);
+    res.status(409).json({ errorMessage: error });
+  }
 };
