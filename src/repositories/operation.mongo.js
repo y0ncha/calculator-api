@@ -35,7 +35,7 @@ async function isLive() {
  * Inserts a new operation record into Mongo when Mongo mode is enabled.
  */
 async function insert({ flavor, operation, arguments: args, result }) {
-  await assertLive(); // 👈 enforce invariant here
+  await assertLive();
 
   const rawid = await nextId();
   const doc = await Operation.create({

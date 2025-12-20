@@ -49,7 +49,7 @@ exports.independentCalculate = async (req, res) => {
     const payload = {
       flavor: "INDEPENDENT",
       operation: opKey,
-      result,
+      result: result,
       arguments: JSON.stringify(args),
     };
 

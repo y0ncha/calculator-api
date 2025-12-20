@@ -13,7 +13,7 @@ const operations = require("../utils/operations");
 const { stackHistory: history } = require("../utils/history");
 const { stackLogger: logger } = require("../loggers");
 const postgres = require("../repositories/operation.postgres");
-const { mongo } = require("mongoose");
+const mongo = require("../repositories/operation.mongo");
 
 /**
  * @function getStackSize
@@ -92,7 +92,7 @@ exports.stackCalculate = async (req, res) => {
     const payload = {
       flavor: "STACK",
       operation: opKey,
-      result,
+      result: result,
       arguments: JSON.stringify(args),
     };
 
