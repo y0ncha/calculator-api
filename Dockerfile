@@ -16,5 +16,8 @@ COPY . .
 # Expose the internal port
 EXPOSE 8496
 
+# Set environment variable for PostgreSQL connection and generate Prisma client
+RUN npx prisma generate
+
 # Define the command to start the app
 CMD ["node", "src/server.js"]

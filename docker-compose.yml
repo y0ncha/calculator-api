@@ -2,14 +2,15 @@ version: "3"
 services:
   postgres:
     image: theshultz/kaplat-calculator-postgres-instance:latest
+    platform: linux/amd64
     #to expose postgres container externally
     ports:
       - "5432:5432"
-  mongo:
-    image: theshultz/kaplat-calculator-mongo-instance:latest
-    #to expose mongo container externally
-    ports:
-      - "27017:27017"
+  # mongo:
+  #   image: theshultz/kaplat-calculator-mongo-instance:latest
+  #   #to expose mongo container externally
+  #   ports:
+  #     - "27017:27017"
   app:
     image: y0ncha/calc-api:latest
     restart: on-failure:10
@@ -17,4 +18,4 @@ services:
       - "4785:8496"
     depends_on:
       - postgres
-      - mongo
+      # - mongo

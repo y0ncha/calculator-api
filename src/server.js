@@ -12,8 +12,9 @@ const express = require("express");
 const { URL } = require("url");
 const logReq = require("./middlewares/requests");
 const { config } = require("./config");
-
-const PORT = 8496;
+const {
+  server: { port: serverPort },
+} = config;
 const app = express();
 
 // Middleware setup
@@ -43,6 +44,6 @@ const maskConnectionString = (uri) => {
   }
 };
 
-app.listen(PORT, () => {
-  console.log(`[startup] Server running on http://localhost:${PORT}`);
+app.listen(serverPort, () => {
+  console.log(`[startup] Server running on http://localhost:${serverPort}`);
 });

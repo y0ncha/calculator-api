@@ -1,21 +1,9 @@
-const tryLoadDotenv = () => {
-  try {
-    // Optional dependency; ignore missing module/file errors
-    require("dotenv").config();
-  } catch (error) {
-    if (error.code !== "MODULE_NOT_FOUND") {
-      console.warn("[config] dotenv load skipped:", error.message);
-    }
-  }
-};
-
-tryLoadDotenv();
-
 const toNumber = (value, fallback) => {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
 };
 
+const appPort = toNumber(process.env.PORT, 8496);
 const postgresHost = process.env.POSTGRES_HOST || "postgres";
 const postgresPort = toNumber(process.env.POSTGRES_PORT, 5432);
 const postgresUser = process.env.POSTGRES_USER || "postgres";
@@ -32,6 +20,9 @@ const mongoUri =
   process.env.MONGO_URI || `mongodb://${mongoHost}:${mongoPort}/${mongoDbName}`;
 
 const config = {
+  server: {
+    port: appPort,
+  },
   postgres: {
     host: postgresHost,
     port: postgresPort,

@@ -13,6 +13,7 @@ const operations = require("../utils/operations");
 const { stackHistory: history } = require("../utils/history");
 const { stackLogger: logger } = require("../loggers");
 const postgres = require("../repositories/operation.postgres");
+const { mongo } = require("mongoose");
 
 /**
  * @function getStackSize
@@ -88,12 +89,15 @@ exports.stackCalculate = async (req, res) => {
     history.addAction(op, args, result);
 
     // Persist to database with flavor STACK
-    await postgres.insert({
+    const payload = {
       flavor: "STACK",
       operation: opKey,
       result,
       arguments: JSON.stringify(args),
-    });
+    };
+
+    await postgres.insert(payload);
+    await mongo.insert(payload);
 
     res.status(200).json({ result });
     logger.debug(`Performing operation: ${op}(${args.join(",")}) = ${result}`);
