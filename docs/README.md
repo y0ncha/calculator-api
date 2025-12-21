@@ -55,3 +55,47 @@ Environment settings live in `.env` at the project root. Prisma does not auto-lo
 
 - `POSTGRES_URI`: PostgreSQL connection string used by Prisma and the API. The default (`postgresql://postgres:docker@localhost:5432/operations`) matches the Postgres service in `docker-compose.yml`; update the credentials/host when pointing to a different database.
 - `MONGO_URI`: Optional MongoDB connection string. Defaults to `mongodb://mongo:27017/<db>` when running under Docker; override only if you need a different host/database.
+
+## Architecture
+
+### Database Layer
+
+The application uses a repository pattern to abstract database operations:
+
+- **PostgreSQL** (required): Primary database using Prisma ORM
+  - Single Prisma client instance at `src/db/postgres/prisma.client.js`
+  - Repository at `src/repositories/operation.postgres.js`
+  
+- **MongoDB** (optional): Alternative persistence layer using Mongoose
+  - Mongoose client at `src/db/mongo/mongoose.client.js`
+  - Repository at `src/repositories/operation.mongo.js`
+
+### Database Schema
+
+**Table/Collection**: `operations`
+
+**Fields**:
+- `rawid` (integer): Sequential ID starting at 1, managed by application (not auto-increment)
+- `flavor` (string): Either "STACK" or "INDEPENDENT" 
+- `operation` (string): Operation name (e.g., "plus", "minus", "divide")
+- `result` (integer): Computed result
+- `arguments` (string): JSON array of arguments stored as string (e.g., "[1,2,3]")
+
+### Repository Methods
+
+Both Postgres and MongoDB repositories expose the same interface:
+- `insert({ flavor, operation, result, arguments })`: Inserts operation with computed rawid
+- `list(flavor)`: Queries operations, optionally filtered by flavor
+- `clear()`: Deletes all operations
+
+### Prisma Transaction Pattern
+
+The `rawid` field is managed by the application using Prisma transactions to ensure atomicity:
+
+```javascript
+await prisma.$transaction(async (tx) => {
+    const last = await getLast(tx, "rawid");
+    const nextId = last ? last + 1 : 1;
+    await tx.operation.create({ data: { rawid: nextId, ... } });
+});
+```
