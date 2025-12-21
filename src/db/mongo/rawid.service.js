@@ -1,7 +1,14 @@
+/**
+ * @module db/mongo/rawid.service
+ * @description Sequential rawid generator for MongoDB operations
+ * @requires ./counter.model
+ */
+
 const { Counter } = require("./counter.model");
 
 /**
- * Returns the next sequential rawid (starts at 1).
+ * @function nextId
+ * @description Returns next sequential rawid starting at 1
  */
 async function nextId() {
   const doc = await Counter.findOneAndUpdate(

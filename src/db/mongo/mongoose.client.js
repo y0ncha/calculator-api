@@ -1,3 +1,10 @@
+/**
+ * @module db/mongo/mongoose.client
+ * @description Mongoose client for MongoDB connection management
+ * @requires mongoose
+ * @requires ../../config
+ */
+
 const mongoose = require("mongoose");
 const { URL } = require("url");
 const { config } = require("../../config");
@@ -20,8 +27,8 @@ const maskConnectionString = (uri) => {
 };
 
 /**
- * Connects to MongoDB using Mongoose.
- * No-op if already connected or if Mongo mode is disabled.
+ * @function connect
+ * @description Connects to MongoDB using Mongoose, no-op if already connected
  */
 async function connect() {
   if (connected) return;
@@ -40,8 +47,8 @@ async function connect() {
 }
 
 /**
- * Disconnects from MongoDB.
- * Safe to call even if not connected.
+ * @function disconnect
+ * @description Disconnects from MongoDB, safe to call if not connected
  */
 async function disconnect() {
   if (!connected) return;
@@ -50,12 +57,17 @@ async function disconnect() {
   connected = false;
 }
 
+/**
+ * @function isConnected
+ * @description Returns MongoDB connection status
+ */
 function isConnected() {
   return connected;
 }
 
 /**
- * Expose mongoose client (like prisma client)
+ * @constant {Object} client
+ * @description Mongoose client instance
  */
 const client = mongoose;
 
