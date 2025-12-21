@@ -75,7 +75,7 @@ The application uses a repository pattern to abstract database operations:
 **Table/Collection**: `operations`
 
 **Fields**:
-- `rawid` (integer): Sequential ID starting at 1, managed by application (not auto-increment)
+- `rawid` (integer): Primary key, sequential ID starting at 1, manually managed by application (not auto-increment)
 - `flavor` (string): Either "STACK" or "INDEPENDENT" 
 - `operation` (string): Operation name (e.g., "plus", "minus", "divide")
 - `result` (integer): Computed result
@@ -90,12 +90,20 @@ Both Postgres and MongoDB repositories expose the same interface:
 
 ### Prisma Transaction Pattern
 
-The `rawid` field is managed by the application using Prisma transactions to ensure atomicity:
+The `rawid` field is manually managed by the application using Prisma transactions to ensure atomicity:
 
 ```javascript
 await prisma.$transaction(async (tx) => {
-    const last = await getLast(tx, "rawid");
-    const nextId = last ? last + 1 : 1;
-    await tx.operation.create({ data: { rawid: nextId, ... } });
+    // Get the last rawid from the database
+    const last = await tx.operation.findFirst({
+        orderBy: { rawid: 'desc' },
+        select: { rawid: true }
+    });
+    const nextId = last ? last.rawid + 1 : 1;
+    
+    // Create new operation with computed rawid
+    await tx.operation.create({ 
+        data: { rawid: nextId, flavor, operation, result, arguments } 
+    });
 });
 ```
