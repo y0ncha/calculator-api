@@ -1,8 +1,14 @@
+/**
+ * @module db/mongo/calculator.schema
+ * @description Mongoose schema for calculator operations collection
+ * @requires mongoose
+ */
+
 const mongoose = require("mongoose");
 
 /**
- * Calculator operation schema (MongoDB).
- * Matches the exercise specification exactly.
+ * @constant {Schema} calculator_schema
+ * @description Schema for operations collection with rawid, flavor, operation, arguments as JSON string, and result
  */
 const calculator_schema = new mongoose.Schema(
   {

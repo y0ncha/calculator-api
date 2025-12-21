@@ -1,6 +1,7 @@
 /**
  * @module repositories/operation.postgres
  * @description PostgreSQL repository for operations table access
+ * @requires ../db/postgres/prisma.client
  */
 
 const { prisma } = require("../db/postgres/prisma.client");
@@ -8,6 +9,10 @@ const { prisma } = require("../db/postgres/prisma.client");
 const PING_TTL_MS = 1000;
 let lastOkAt = 0;
 
+/**
+ * @function assertLive
+ * @description Verifies Postgres connection is available, throws error if not
+ */
 async function assertLive() {
   const now = Date.now();
   if (now - lastOkAt < PING_TTL_MS) return;
@@ -24,6 +29,10 @@ async function assertLive() {
   lastOkAt = now;
 }
 
+/**
+ * @function isLive
+ * @description Checks if Postgres is available, returns boolean
+ */
 async function isLive() {
   try {
     await prisma.$connect();
@@ -34,6 +43,11 @@ async function isLive() {
   }
 }
 
+/**
+ * @function insert
+ * @description Inserts operation to operations table with computed rawid.
+ * Uses Prisma transaction to compute next rawid (getLast + 1) and insert atomically.
+ */
 async function insert({ flavor, operation, result, arguments: args }) {
   await assertLive();
 
@@ -49,6 +63,10 @@ async function insert({ flavor, operation, result, arguments: args }) {
   });
 }
 
+/**
+ * @function list
+ * @description Fetches operations from operations table, optionally filtered by flavor
+ */
 async function list(flavor) {
   await assertLive();
 
@@ -58,6 +76,11 @@ async function list(flavor) {
   });
 }
 
+/**
+ * @function getLast
+ * @private
+ * @description Retrieves last value of specified field from operations table
+ */
 async function getLast(tx, field) {
   const row = await tx.operation.findFirst({
     orderBy: { [field]: "desc" },
@@ -67,6 +90,10 @@ async function getLast(tx, field) {
   return row ? row[field] : null;
 }
 
+/**
+ * @function clear
+ * @description Deletes all operations from operations table, returns count deleted
+ */
 async function clear() {
   if (!(await isLive())) return 0; // silent skip if down
 

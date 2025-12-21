@@ -19,6 +19,10 @@ exports.health = (req, res) => {
   res.status(200).send("OK");
 };
 
+/**
+ * @function fetchHistory
+ * @description Fetches operation history from in-memory or database (Postgres/MongoDB)
+ */
 exports.fetchHistory = async (req, res) => {
   const { flavor, persistenceMethod } = req.query;
 

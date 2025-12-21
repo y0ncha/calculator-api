@@ -1,3 +1,8 @@
+/**
+ * @module config
+ * @description Configuration loader for database connections (Postgres and MongoDB)
+ */
+
 const tryLoadDotenv = () => {
   try {
     // Optional dependency; ignore missing module/file errors
