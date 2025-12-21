@@ -45,7 +45,8 @@ async function isLive() {
 
 /**
  * @function insert
- * @description Inserts operation to operations table with computed rawid. Uses Prisma transaction to compute next rawid (getLast + 1) and insert atomically.
+ * @description Inserts operation to operations table with computed rawid.
+ * Uses Prisma transaction to compute next rawid (getLast + 1) and insert atomically.
  */
 async function insert({ flavor, operation, result, arguments: args }) {
   await assertLive();
@@ -77,8 +78,8 @@ async function list(flavor) {
 
 /**
  * @function getLast
- * @description Retrieves last value of specified field from operations table
  * @private
+ * @description Retrieves last value of specified field from operations table
  */
 async function getLast(tx, field) {
   const row = await tx.operation.findFirst({
