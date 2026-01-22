@@ -1,3 +1,21 @@
+/**
+ * @module config
+ * @description Configuration loader for database connections (Postgres and MongoDB)
+ */
+
+const tryLoadDotenv = () => {
+  try {
+    // Optional dependency; ignore missing module/file errors
+    require("dotenv").config();
+  } catch (error) {
+    if (error.code !== "MODULE_NOT_FOUND") {
+      console.warn("[config] dotenv load skipped:", error.message);
+    }
+  }
+};
+
+tryLoadDotenv();
+
 const toNumber = (value, fallback) => {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
